@@ -1,0 +1,6 @@
+import { paperAutomationService } from "./paper-automation.service";
+const TZ="Asia/Kolkata";
+const parts=(d=new Date())=>{const p=new Intl.DateTimeFormat("en-GB",{timeZone:TZ,weekday:"short",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(d);const get=(t:string)=>p.find(x=>x.type===t)?.value||"";return {day:get("weekday"),hour:Number(get("hour")),minute:Number(get("minute"))};};
+let timer:NodeJS.Timeout|undefined;let lastReset="";let lastScan=0;let lastClose="";
+export function startAutomationScheduler(){if(timer)return;console.log("Daily paper-trading scheduler started (Asia/Kolkata)");timer=setInterval(async()=>{try{const {day,hour,minute}=parts();if(day==="Sat"||day==="Sun")return;const now=Date.now();const stamp=new Date().toISOString().slice(0,10);if(hour===9&&minute===15&&lastReset!==stamp){lastReset=stamp;await paperAutomationService.resetEnabledUsers();}if(((hour===9&&minute>=30)||(hour>=10&&hour<15)||(hour===15&&minute<=15))&&now-lastScan>=240000){lastScan=now;await paperAutomationService.scanEnabledUsers();}if(hour===15&&minute===20&&lastClose!==stamp){lastClose=stamp;await paperAutomationService.closeAllUsers();}}catch(e){console.error("Paper-trading scheduler error",e);}},30000);}
+export function stopAutomationScheduler(){if(timer)clearInterval(timer);timer=undefined;}

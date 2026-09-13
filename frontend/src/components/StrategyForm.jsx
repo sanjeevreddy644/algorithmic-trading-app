@@ -1,0 +1,4 @@
+import { useEffect, useState } from "react";
+const defaults={atrMin:0.5,atrMax:2.5,rvolMin:1.2,rvolMax:5,stopDistanceAtr:1.5};
+const fields=[["atrMin","ATR minimum"],["atrMax","ATR maximum"],["rvolMin","RVOL minimum"],["rvolMax","RVOL maximum"],["stopDistanceAtr","Stop distance (ATR)"]];
+export default function StrategyForm({ initial, onSave, saving=false }) { const [form,setForm]=useState({...defaults,...(initial||{})}); useEffect(()=>setForm({...defaults,...(initial||{})}),[initial]); const set=(k,v)=>setForm(x=>({...x,[k]:Number(v)})); return <form className="strategy-form" onSubmit={e=>{e.preventDefault();onSave(form)}}>{fields.map(([key,label])=><div className="field" key={key}><label htmlFor={`strategy-${key}`}>{label}</label><input id={`strategy-${key}`} type="number" step="0.1" value={form[key]} onChange={e=>set(key,e.target.value)}/></div>)}<button className="button primary" disabled={saving}>{saving?"Saving…":"Save strategy parameters"}</button></form>; }

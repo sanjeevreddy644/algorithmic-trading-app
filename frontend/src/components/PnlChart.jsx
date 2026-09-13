@@ -1,0 +1,2 @@
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+export default function PnlChart({ data=[] }) { return <div className="chart-box"><ResponsiveContainer width="100%" height={260}><AreaChart data={data}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="label" /><YAxis /><Tooltip formatter={v=>[`₹${Number(v).toFixed(2)}`,"Equity"]}/><Area type="monotone" dataKey="equity" fillOpacity={0.18} strokeWidth={2} /></AreaChart></ResponsiveContainer></div>; }

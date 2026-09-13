@@ -1,0 +1,1 @@
+import {Router} from "express";import {requireAuth} from "../middleware/auth.middleware";import {asyncHandler} from "../utils/async-handler";import {listDailyPerformance} from "../controllers/daily-performance.controller";const r=Router();r.get("/",requireAuth,asyncHandler(listDailyPerformance));export default r;

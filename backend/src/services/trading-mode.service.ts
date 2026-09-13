@@ -1,0 +1,6 @@
+import { env } from "../config/env";
+import { UserDocument } from "../models/user.model";
+import { AppError } from "../utils/errors";
+import { performanceGateService } from "./performance-gate.service";
+export class TradingModeService { async get(user:UserDocument){return {mode:user.tradingMode,liveTradingEnabled:env.liveTradingEnabled,liveTradingUnlockedAt:user.liveTradingUnlockedAt??null,performance:await performanceGateService.evaluate(user)};} async set(user:UserDocument,mode:"paper"|"live",confirmation?:string){if(mode!=="live"){user.tradingMode="paper";user.liveTradingUnlockedAt=undefined;await user.save();return this.get(user);}if(!env.liveTradingEnabled)throw new AppError(503,"Live trading is disabled by the server");if(confirmation!==env.liveTradingConfirmation)throw new AppError(400,"Exact live-trading confirmation string is required");if(user.killSwitchEnabled)throw new AppError(403,"Trading is disabled by the account kill switch");const performance=await performanceGateService.evaluate(user);if(!performance.eligible)throw new AppError(403,"Paper-trading performance requirements are not satisfied",performance);user.tradingMode="live";user.liveTradingUnlockedAt=new Date();await user.save();return this.get(user);}}
+export const tradingModeService=new TradingModeService();

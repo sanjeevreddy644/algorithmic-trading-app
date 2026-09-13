@@ -1,0 +1,1 @@
+import {Router} from "express";import {requireAuth} from "../middleware/auth.middleware";import {asyncHandler} from "../utils/async-handler";import {getMode,setMode} from "../controllers/trading-mode.controller";const r=Router();r.get("/mode",requireAuth,asyncHandler(getMode));r.post("/mode",requireAuth,asyncHandler(setMode));export default r;

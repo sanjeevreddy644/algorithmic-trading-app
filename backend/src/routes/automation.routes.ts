@@ -1,0 +1,10 @@
+import {Router} from "express";
+import {requireAuth} from "../middleware/auth.middleware";
+import {asyncHandler} from "../utils/async-handler";
+import * as c from "../controllers/automation.controller";
+const r=Router();
+r.get("/",requireAuth,asyncHandler(c.getAutomation));
+r.post("/toggle",requireAuth,asyncHandler(c.setAutomation));
+r.post("/reset",requireAuth,asyncHandler(c.resetAutomation));
+r.post("/scan",requireAuth,asyncHandler(c.scanAutomation));
+export default r;
